@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block title %} {{'Edit' if detail else 'Add'}} Order Detail {% endblock %}
+
+{% block content %}
+
+<div class="container mx-auto p-4 flex flex-col justify-center items-center min-h-screen">
+    <div class="bg-gray-800 shadow-lg rounded-lg p-8 w-full">
+        <h1 class="text-3xl font-bold mb-6 text-white text-center">
+            {{'Edit' if detail else 'Add'}} Order Detail
+        </h1>
+        
+        <form method="POST" class="space-y-6">
+            
+            <div>
+                <label for="product_id" class="block text-gray-300 font-medium mb-1">Product:</label>
+                <select name="product_id" id="product_id" required
+                        class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500">
+                    <option value="">-- Select a product --</option>
+                    {% for p in products %}
+                    <option value="{{ p.id }}" {% if detail and detail.product_id == p.id %}selected{% endif %}>
+                        {{ p.product_name }} - ${{ p.price }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="quantity" class="block text-gray-300 font-medium mb-1">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" min="1" value="{{ detail.quantity if detail else '' }}" class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500" required>
+            </div>
+
+            <div>
+                <label for="unit_price" class="block text-gray-300 font-medium mb-1">Unit Price:</label>
+                <input type="number" id="unit_price" name="unit_price" step="0.01" value="{{ detail.unit_price if detail else '' }}" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg" readonly>
+            </div>
+
+            <div>
+                <label for="subtotal" class="block text-gray-300 font-medium mb-1">Subtotal:</label>
+                <input type="number" id="subtotal" name="subtotal" step="0.01" value="{{ detail.subtotal if detail else '' }}" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg" readonly>
+            </div>
+        
+            <div class="flex justify-center">
+                <input type="submit" value="Send" class="bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg cursor-pointer transition duration-200">
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

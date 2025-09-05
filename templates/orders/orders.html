@@ -1,0 +1,86 @@
+{% extends 'layout.html'%}
+
+{% block title %}Orders{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Orders</h1>
+
+    <div class="bg-gray-800 shadow-md rounded-lg overflow-hidden">
+        <table class="min-w-full leading-normal">
+            <thead>
+                <tr class="bg-gray-900 text-white uppercase text-sm leading-normal">
+                    <th class="py-3 px-6 text-left">ID</th>
+                    <th class="py-3 px-6 text-left">Date</th>
+                    <th class="py-3 px-6 text-left">Client</th>
+                    <th class="py-3 px-6 text-left">Status</th>
+                    <th class="py-3 px-6 text-left">Payment Method</th>
+                    <th class="py-3 px-6 text-left">Total</th>
+                    <th class="py-3 px-6 text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-300 text-sm font-light">
+                {% for o in orders %}
+                <tr class="border-b border-gray-700 hover:bg-gray-700">
+                    <td class="py-3 px-6 text-left whitespace-nowrap">{{ o.id }}</td>
+                    <td class="py-3 px-6 text-left">{{ o.date }}</td>
+                    <td class="py-3 px-6 text-left">{{ o.client_id }}</td>
+                    <td class="py-3 px-6 text-left">
+                        <span class="relative inline-block px-3 py-1 font-semibold leading-tight
+                            {% if o.status.lower() == 'completed' or o.status.lower() == 'delivered' %}
+                                text-green-900
+                            {% elif o.status.lower() == 'pending' or o.status.lower() == 'in progress' %}
+                                text-yellow-900
+                            {% elif o.status.lower() == 'cancelled' or o.status.lower() == 'rejected' %}
+                                text-red-900
+                            {% else %}
+                                text-blue-900
+                            {% endif %}">
+                            <span aria-hidden class="absolute inset-0 opacity-50 rounded-full
+                                {% if o.status.lower() == 'completed' or o.status.lower() == 'delivered' %}
+                                    bg-green-200
+                                {% elif o.status.lower() == 'pending' or o.status.lower() == 'in progress' %}
+                                    bg-yellow-200
+                                {% elif o.status.lower() == 'cancelled' or o.status.lower() == 'rejected' %}
+                                    bg-red-200
+                                {% else %}
+                                    bg-blue-200
+                                {% endif %}"></span>
+                            <span class="relative">{{ o.status }}</span>
+                        </span>
+                    </td>
+                    <td class="py-3 px-6 text-left">{{ o.payment_method }}</td>
+                    <td class="py-3 px-6 text-left">{{ o.total }}</td>
+                    <td class="py-3 px-6 text-center">
+                        <div class="flex item-center justify-center space-x-2">
+                            <a href="{{ url_for('show_order_details', order_id=o.id) }}" class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{{ url_for('edit_order', id=o.id) }}" class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{{ url_for('delete_order', id=o.id) }}" onclick="return confirm('Are you sure you want to delete this order?')" class="w-4 mr-2 transform hover:text-red-500 hover:scale-110">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr class="border-b border-gray-700">
+                    <td colspan="6" class="py-3 px-6 text-center">There are no orders yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="mt-6 flex justify-between items-center">
+        <a href="{{ url_for('index') }}" class="bg-gray-900 hover:bg-gray-700 text-white font-boldedit_client py-2 px-4 rounded-lg shadow-lg transition duration-200">
+            Go back
+        </a>
+        <a href="{{ url_for('create_order') }}" class="bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-200">
+            Add New Order
+        </a>
+    </div>
+</div>
+{% endblock %}

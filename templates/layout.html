@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} Brew & Chill {% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+    <header class="bg-gray-800 text-white p-4 flex justify-between items-center fixed top-0 w-full z-20">
+        <h1 class="text-2xl font-bold">Brew & Chill</h1>
+    </header>
+
+    <aside id="sidebar" class="bg-gray-900 text-white w-64 fixed inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-10 p-4 pt-16">
+        <nav class="mt-8">
+            <ul class="space-y-2">
+                <li class="sidebar-item">
+                    <a href="{{ url_for('index') }}" class="sidebar-link flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700 transition duration-200">
+                        <i class="fas fa-home text-lg"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ url_for('show_products') }}" class="sidebar-link flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700 transition duration-200">
+                        <i class="fas fa-coffee text-lg"></i>
+                        <span>Products</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ url_for('show_clients') }}" class="sidebar-link flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700 transition duration-200">
+                        <i class="fas fa-users text-lg"></i>
+                        <span>Clients</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="{{ url_for('show_orders') }}" class="sidebar-link flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700 transition duration-200">
+                        <i class="fas fa-receipt text-lg"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="ml-0 md:ml-64 transition-all duration-300 ease-in-out p-6 pt-20">
+        {% block content%}
+
+        {% endblock %}
+    </main>
+
+    <footer class="bg-gray-800 text-white text-center p-4 fixed bottom-0 w-full z-20 mt-auto">
+        <span>© 2025 Jhonnier Diaz™. All Rights Reserved.</span>
+    </footer>
+</body>
+</html>

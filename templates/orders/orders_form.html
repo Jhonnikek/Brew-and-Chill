@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+
+{% block title %} {{'Edit' if order else 'Add'}} Order {% endblock %}
+
+{% block content %}
+
+<div class="container mx-auto p-4 flex flex-col justify-center items-center min-h-screen">
+    <div class="bg-gray-800 shadow-lg rounded-lg p-8 w-full">
+        <h1 class="text-3xl font-bold mb-6 text-white text-center">{{'Edit' if order else 'Add'}} Order</h1>
+        
+        <form method="POST" class="space-y-6">
+            <div>
+                <label for="date" class="block text-gray-300 font-medium mb-1">Date:</label>
+                <input type="datetime-local" id="date" name="date" value="{{ order.date.strftime('%Y-%m-%dT%H:%M') if order else '' }}" class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500" required>
+            </div>
+        
+            <div>
+                <label for="client" class="block text-gray-300 font-medium mb-1">Client:</label>
+                <select name="client_id" id="client" required
+                        class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500">
+                    <option value="">-- Select a client --</option>
+                    {% for client in clients %}
+                    <option value="{{ client.id }}" {% if order and order.client_id == client.id %}selected{% endif %}>
+                        {{ client.client_name }} {{ client.last_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        
+            <div>
+                <label for="status" class="block text-gray-300 font-medium mb-1">Status:</label>
+                <select name="status" id="status"
+                        class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500">
+                    <option value="">-- Select a status --</option>
+                    <option value="completed" {% if order and order.status == 'completed' %}selected{% endif %}>Completed</option>
+                    <option value="on_hold" {% if order and order.status == 'on_hold' %}selected{% endif %}>On hold</option>
+                    <option value="cancelled" {% if order and order.status == 'cancelled' %}selected{% endif %}>cancelled</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="payment_method" class="block text-gray-300 font-medium mb-1">Payment Method:</label>
+                <select name="payment_method" id="payment_method" required
+                        class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500">
+                    <option value="">-- Select a payment method --</option>
+                    <option value="cash" {% if order and order.payment_method == 'cash' %}selected{% endif %}>Cash</option>
+                    <option value="credit_card" {% if order and order.payment_method == 'credit_card' %}selected{% endif %}>Credit Card</option>
+                    <option value="debit_card" {% if order and order.payment_method == 'debit_card' %}selected{% endif %}>Debit Card</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="total" class="block text-gray-300 font-medium mb-1">Total:</label>
+                <input type="number" id="total" name="total" value="{{ order.total if order else '' }}" placeholder="Total Order" step="0.01" required class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500">
+            </div>
+        
+            <div class="flex justify-center">
+                <input type="submit" value="Send" class="bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg cursor-pointer transition duration-200">
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
