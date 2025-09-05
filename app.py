@@ -58,7 +58,7 @@ def index():
 @app.route('/products')
 def show_products():
     products = Product.query.order_by(Product.id.desc()).all()
-    return render_template('products.html', products=products)
+    return render_template('products/products.html', products=products)
 
 @app.route('/products/new', methods=['GET','POST'])
 def create_product():
@@ -78,7 +78,7 @@ def create_product():
         db.session.commit()
         return redirect(url_for("show_products"))
     
-    return render_template ("products_form.html", product=None)
+    return render_template ("products/products_form.html", product=None)
 
 @app.route('/products/edit/<int:id>', methods=['GET', 'POST'])
 def edit_product(id):
@@ -92,7 +92,7 @@ def edit_product(id):
         db.session.commit()
         return redirect(url_for("show_products"))
     
-    return render_template ("products_form.html", product=product)
+    return render_template ("products/products_form.html", product=product)
 
 @app.route('/products/delete/<int:id>')
 def delete_product(id):
@@ -104,7 +104,7 @@ def delete_product(id):
 @app.route('/clients')
 def show_clients():
     clients = Client.query.order_by(Client.id.desc()).all()
-    return render_template('clients.html', clients=clients)
+    return render_template('clients/clients.html', clients=clients)
 
 @app.route('/clients/new', methods=['GET', 'POST'])
 def create_client():
@@ -125,7 +125,7 @@ def create_client():
         db.session.commit()
         return redirect(url_for("create_order"))
     
-    return render_template ("clients_form.html", client=None)
+    return render_template ("clients/clients_form.html", client=None)
 
 @app.route('/clients/edit/<int:id>', methods=['GET', 'POST'])
 def edit_client(id):
@@ -139,7 +139,7 @@ def edit_client(id):
         db.session.commit()
         return redirect(url_for("show_clients"))
 
-    return render_template ("clients_form.html", client=client)
+    return render_template ("clients/clients_form.html", client=client)
 
 @app.route('/clients/delete/<int:id>')
 def delete_client(id):
@@ -151,7 +151,7 @@ def delete_client(id):
 @app.route('/orders')
 def show_orders():
     orders = Order.query.order_by(Order.date.desc()).all()
-    return render_template('orders.html', orders=orders)
+    return render_template('orders/orders.html', orders=orders)
 
 @app.route('/orders/new', methods=['GET', 'POST'])
 def create_order():
@@ -175,7 +175,7 @@ def create_order():
         return redirect(url_for('create_order_detail', order_id=new_order.id))
     
     clients = Client.query.order_by(Client.client_name).all()
-    return render_template("orders_form.html", order=None, clients=clients)
+    return render_template("orders/orders_form.html", order=None, clients=clients)
 
 @app.route('/orders/edit/<int:id>', methods=['GET', 'POST'])
 def edit_order(id):
@@ -192,7 +192,7 @@ def edit_order(id):
         return redirect(url_for("show_orders"))
     
     clients = Client.query.order_by(Client.client_name).all()
-    return render_template("orders_form.html", order=order, clients=clients)
+    return render_template("orders/orders_form.html", order=order, clients=clients)
 
 @app.route('/orders/delete/<int:id>')
 def delete_order(id):
@@ -205,7 +205,7 @@ def delete_order(id):
 @app.route('/orders/<int:order_id>')
 def show_order_details(order_id):
     order = Order.query.get_or_404(order_id)
-    return render_template('order_details.html', order=order)
+    return render_template('orders/order_details.html', order=order)
 
 @app.route('/orders/<int:order_id>/details/new', methods=["GET", "POST"])
 def create_order_detail(order_id):
@@ -238,7 +238,7 @@ def create_order_detail(order_id):
         
         return redirect(url_for("show_order_details", order_id=order.id))
 
-    return render_template("order_detail_form.html", detail=None, order=order, products=products)
+    return render_template("orders/order_detail_form.html", detail=None, order=order, products=products)
 
 @app.route('/order_detail/edit/<int:id>', methods=['GET', 'POST'])
 def edit_order_detail(id):
@@ -262,7 +262,7 @@ def edit_order_detail(id):
         db.session.commit()
         return redirect(url_for("show_order_details", order_id=order.id))
 
-    return render_template("order_detail_form.html", detail=detail, order=order, products=products)
+    return render_template("orders/order_detail_form.html", detail=detail, order=order, products=products)
 
 @app.route('/order_detail/delete/<int:id>')
 def delete_order_detail(id):
