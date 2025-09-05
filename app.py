@@ -1,5 +1,6 @@
 from flask import Flask, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 app = Flask (__name__)
 
@@ -27,17 +28,14 @@ class Client(db.Model):
 
     def __repr__(self):
         return f'<client {self.client_name}>'
-
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False)  
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)  
     total = db.Column(db.Float, nullable=False)
     payment_method = db.Column(db.String(20), nullable=False, default="cash")
     client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=False)
     client = db.relationship('Client', backref=db.backref('orders', lazy=True))
     status = db.Column(db.String(20), nullable=False)  
-
-
 class OrderDetail(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
@@ -50,11 +48,16 @@ class OrderDetail(db.Model):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    products_count = Product.query.count()
+    clients_count = Client.query.count()
+    orders_count = Order.query.count()
+    order_details_count = OrderDetail.query.count()
+    recent_orders = Order.query.order_by(Order.date.desc()).limit(5).all()
+    return render_template('index.html', products_count=products_count, clients_count=clients_count, orders_count=orders_count, order_details_count=order_details_count, recent_orders=recent_orders)
 
 @app.route('/products')
 def show_products():
-    products = Product.query.all()
+    products = Product.query.order_by(Product.id.desc()).all()
     return render_template('products.html', products=products)
 
 @app.route('/products/new', methods=['GET','POST'])
@@ -64,10 +67,17 @@ def create_product():
         price = request.form["price"]
         status = request.form["status"]
         description = request.form["description"]
-        new_product = Product (product_name=product_name, price=price, status=status, description=description)
+        
+        new_product = Product (
+            product_name=product_name, 
+            price=price, status=status,
+            description=description)
+        
         db.session.add(new_product)
+        
         db.session.commit()
         return redirect(url_for("show_products"))
+    
     return render_template ("products_form.html", product=None)
 
 @app.route('/products/edit/<int:id>', methods=['GET', 'POST'])
@@ -78,8 +88,10 @@ def edit_product(id):
         product.price = request.form["price"]
         product.status = request.form["status"]
         product.description = request.form['description']
+        
         db.session.commit()
         return redirect(url_for("show_products"))
+    
     return render_template ("products_form.html", product=product)
 
 @app.route('/products/delete/<int:id>')
@@ -91,7 +103,7 @@ def delete_product(id):
 
 @app.route('/clients')
 def show_clients():
-    clients = Client.query.all()
+    clients = Client.query.order_by(Client.id.desc()).all()
     return render_template('clients.html', clients=clients)
 
 @app.route('/clients/new', methods=['GET', 'POST'])
@@ -102,10 +114,15 @@ def create_client():
         phone = request.form["phone"]
         email = request.form["email"]
         
-        new_client = Client (client_name=client_name, last_name=last_name, phone=phone, email=email)
-        db.session.add(new_client)
-        db.session.commit()
+        new_client = Client (
+            client_name=client_name,
+            last_name=last_name,
+            phone=phone,
+            email=email)
         
+        db.session.add(new_client)
+
+        db.session.commit()
         return redirect(url_for("create_order"))
     
     return render_template ("clients_form.html", client=None)
@@ -118,8 +135,10 @@ def edit_client(id):
         client.last_name = request.form["last_name"]
         client.phone = request.form["phone"]
         client.email = request.form["email"]
+
         db.session.commit()
         return redirect(url_for("show_clients"))
+
     return render_template ("clients_form.html", client=client)
 
 @app.route('/clients/delete/<int:id>')
@@ -131,43 +150,131 @@ def delete_client(id):
 
 @app.route('/orders')
 def show_orders():
-    orders = Order.query.all()
+    orders = Order.query.order_by(Order.date.desc()).all()
     return render_template('orders.html', orders=orders)
 
 @app.route('/orders/new', methods=['GET', 'POST'])
 def create_order():
     if request.method == 'POST':
-        date = request.form["date"]
+        date_str = request.form["date"]
+        date_value = datetime.strptime(date_str, "%Y-%m-%dT%H:%M")
         client_id = request.form["client_id"] 
         status = request.form["status"]
         payment_method = request.form["payment_method"]
         total = request.form["total"]
-        new_order = Order(date=date, client_id=client_id, status=status,payment_method=payment_method, total=total)
+        
+        new_order = Order(
+            date=date_value,
+            client_id=client_id,
+            status=status,
+            payment_method=payment_method,
+            total=total)
+        
         db.session.add(new_order)
         db.session.commit()
-        return redirect(url_for("show_orders"))
-    clients = Client.query.all()
+        return redirect(url_for('create_order_detail', order_id=new_order.id))
+    
+    clients = Client.query.order_by(Client.client_name).all()
     return render_template("orders_form.html", order=None, clients=clients)
 
 @app.route('/orders/edit/<int:id>', methods=['GET', 'POST'])
 def edit_order(id):
     order = Order.query.get_or_404(id)
     if request.method == 'POST':
-        order.date = request.form["date"]
+        date_str = request.form["date"]
+        order.date = datetime.strptime(date_str, "%Y-%m-%dT%H:%M")
         order.client_id = request.form["client_id"]
         order.status = request.form["status"]
         order.payment_method = request.form["payment_method"]
         order.total = request.form["total"]
+        
         db.session.commit()
         return redirect(url_for("show_orders"))
-    return render_template("orders_form.html", order=order)
+    
+    clients = Client.query.order_by(Client.client_name).all()
+    return render_template("orders_form.html", order=order, clients=clients)
 
 @app.route('/orders/delete/<int:id>')
 def delete_order(id):
     order = Order.query.get_or_404(id)
+    OrderDetail.query.filter_by(order_id=id).delete()
     db.session.delete(order)
     db.session.commit()
     return redirect(url_for('show_orders'))
+
+@app.route('/orders/<int:order_id>')
+def show_order_details(order_id):
+    order = Order.query.get_or_404(order_id)
+    return render_template('order_details.html', order=order)
+
+@app.route('/orders/<int:order_id>/details/new', methods=["GET", "POST"])
+def create_order_detail(order_id):
+    order = Order.query.get_or_404(order_id)
+    products = Product.query.order_by(Product.product_name).all()
+    if request.method == "POST":
+        product_id = request.form.get("product_id")
+        quantity_str = request.form.get("quantity")
+
+        if not product_id or not quantity_str:
+            return "Missing product or quantity", 400
+
+        quantity = int(quantity_str)
+        product = Product.query.get_or_404(product_id)
+        
+        unit_price = product.price
+        subtotal = quantity * unit_price
+        
+        new_detail = OrderDetail(
+            order_id=order.id,
+            product_id=product.id,
+            quantity=quantity,
+            unit_price=unit_price,
+            subtotal=subtotal
+        )
+        db.session.add(new_detail)
+
+        order.total += subtotal
+        db.session.commit()
+        
+        return redirect(url_for("show_order_details", order_id=order.id))
+
+    return render_template("order_detail_form.html", detail=None, order=order, products=products)
+
+@app.route('/order_detail/edit/<int:id>', methods=['GET', 'POST'])
+def edit_order_detail(id):
+    detail = OrderDetail.query.get_or_404(id)
+    order = detail.order
+    products = Product.query.order_by(Product.product_name).all()
+
+    if request.method == 'POST':
+
+        original_subtotal = detail.subtotal
+
+        detail.product_id = request.form["product_id"]
+        detail.quantity = int(request.form["quantity"])
+
+        product = Product.query.get_or_404(detail.product_id)
+        detail.unit_price = product.price
+        detail.subtotal = detail.quantity * detail.unit_price
+
+        order.total = (order.total - original_subtotal) + detail.subtotal
+
+        db.session.commit()
+        return redirect(url_for("show_order_details", order_id=order.id))
+
+    return render_template("order_detail_form.html", detail=detail, order=order, products=products)
+
+@app.route('/order_detail/delete/<int:id>')
+def delete_order_detail(id):
+    detail = OrderDetail.query.get_or_404(id)
+    order = detail.order
+
+    order.total -= detail.subtotal
+
+    db.session.delete(detail)
+    db.session.commit()
+    
+    return redirect(url_for("show_order_details", order_id=order.id))
 
 if __name__ == '__main__':
     with app.app_context():
