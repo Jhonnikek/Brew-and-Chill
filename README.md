@@ -46,10 +46,7 @@ python -m venv env
 source env/bin/activate   # On Linux/Mac
 env\Scripts\activate #Windows
 ```
-### 3. Install dependencies
-```bash
-pip install -r requirements.txt
-```
+
 ### 3. Install dependencies
 ```bash
 pip install -r requirements.txt
