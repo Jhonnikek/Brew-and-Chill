@@ -35,7 +35,7 @@ class Order(db.Model):
     payment_method = db.Column(db.String(20), nullable=False, default="cash")
     client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=False)
     client = db.relationship('Client', backref=db.backref('orders', lazy=True))
-    status = db.Column(db.String(20), nullable=False)  
+    status = db.Column(db.String(20), nullable=False)
 class OrderDetail(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)

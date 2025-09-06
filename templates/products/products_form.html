@@ -1,44 +1,52 @@
 {% extends 'layout.html' %}
 
-{% block title %} {{'Edit' if product else 'Add' }} Product {% endblock %}
+{% block title %} {{'Edit' if product else 'Add'}} Product {% endblock %}
 
 {% block content %}
+<div class="mb-4">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{'Edit' if product else 'Add'}} Product</h1>
+    <p class="text-gray-700 dark:text-gray-400 mt-2">{{ 'Update product information' if product else 'Create a new product for your catalog' }}</p>
+</div>
 
-<div class="container mx-auto p-4 flex flex-col justify-center items-center min-h-screen">
-    <div class="bg-gray-800 shadow-lg rounded-lg p-8 w-full">
-        <h1 class="text-3xl font-bold mb-6 text-white text-center">{{'Edit' if product else 'Add' }} Product</h1>
-        
+<div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+    <div class="p-6">
         <form method="POST" class="space-y-6">
-            <div>
-                <label for="product_name" class="block text-gray-300 font-medium mb-1">Name:</label>
-                <input type="text" id="product_name" name="product_name" value="{{ product.product_name if product else '' }}" placeholder="Product name" required class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="product_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Name</label>
+                    <input type="text" id="product_name" name="product_name" value="{{ product.product_name if product else '' }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Enter product name" required>
+                </div>
+            
+                <div>
+                    <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price ($)</label>
+                    <input type="number" id="price" name="price" step="0.01" value="{{ product.price if product else '' }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="0.00" required>
+                </div>
             </div>
         
             <div>
-                <label for="price" class="block text-gray-300 font-medium mb-1">Price:</label>
-                <input type="number" id="price" name="price" value="{{ product.price if product else '' }}" placeholder="Product price" step="0.01" required class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500">
-            </div>
-        
-            <div>
-                <label for="status" class="block text-gray-300 font-medium mb-1">Status:</label>
-                <select name="status" id="status"
-                        class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500">
-                    <option value="">-- Select a status --</option>
-                    <option value="active" {% if product and product.status == 'active' %}selected{% endif %}>Active</option>
-                    <option value="inactive" {% if product and product.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                <label for="status" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Status</label>
+                <select name="status" id="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required>
+                    <option value="">Choose a status</option>
+                    <option value="available" {% if product and product.status == 'available' %}selected{% endif %}>Available</option>
+                    <option value="unavailable" {% if product and product.status == 'unavailable' %}selected{% endif %}>Unavailable</option>
+                    <option value="out_of_stock" {% if product and product.status == 'out_of_stock' %}selected{% endif %}>Out of stock</option>
                 </select>
             </div>
         
             <div>
-                <label for="description" class="block text-gray-300 font-medium mb-1">Description:</label>
-                <textarea rows="5" cols="50" id="description" name="description" placeholder="Product description" required class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500">{{ product.description if product else '' }}</textarea>
+                <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
+                <textarea id="description" name="description" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Write product description here..." required>{{ product.description if product else '' }}</textarea>
             </div>
         
-            <div class="flex justify-center">
-                <input type="submit" value="Send" class="bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg cursor-pointer transition duration-200">
+            <div class="flex items-center justify-between pt-4">
+                <a href="{{ url_for('show_products') }}" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-700 border border-gray-300 dark:border-gray-600">
+                    Cancel
+                </a>
+                <button type="submit" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                    {{ 'Update Product' if product else 'Create Product' }}
+                </button>
             </div>
         </form>
     </div>
 </div>
-
 {% endblock %}

@@ -3,84 +3,85 @@
 {% block title %}Orders{% endblock %}
 
 {% block content %}
-<div class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-6 text-gray-800">Orders</h1>
+<div class="mb-4 flex justify-between items-center">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Orders</h1>
+        <p class="text-gray-700 dark:text-gray-400 mt-2">Manage customer orders and sales</p>
+    </div>
+    <a href="{{ url_for('create_order') }}" class="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-purple-600 dark:hover:bg-purple-700 focus:outline-none dark:focus:ring-purple-800">
+        <i class="fas fa-plus mr-2"></i>Create Order
+    </a>
+</div>
 
-    <div class="bg-gray-800 shadow-md rounded-lg overflow-hidden">
-        <table class="min-w-full leading-normal">
-            <thead>
-                <tr class="bg-gray-900 text-white uppercase text-sm leading-normal">
-                    <th class="py-3 px-6 text-left">ID</th>
-                    <th class="py-3 px-6 text-left">Date</th>
-                    <th class="py-3 px-6 text-left">Client</th>
-                    <th class="py-3 px-6 text-left">Status</th>
-                    <th class="py-3 px-6 text-left">Payment Method</th>
-                    <th class="py-3 px-6 text-left">Total</th>
-                    <th class="py-3 px-6 text-center">Actions</th>
+<div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Client</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Payment Method</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
-            <tbody class="text-gray-300 text-sm font-light">
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {% for o in orders %}
-                <tr class="border-b border-gray-700 hover:bg-gray-700">
-                    <td class="py-3 px-6 text-left whitespace-nowrap">{{ o.id }}</td>
-                    <td class="py-3 px-6 text-left">{{ o.date }}</td>
-                    <td class="py-3 px-6 text-left">{{ o.client_id }}</td>
-                    <td class="py-3 px-6 text-left">
-                        <span class="relative inline-block px-3 py-1 font-semibold leading-tight
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">#{{ o.id }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ o.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ o.client.client_name }} {{ o.client.last_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
                             {% if o.status.lower() == 'completed' or o.status.lower() == 'delivered' %}
-                                text-green-900
+                                bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100
                             {% elif o.status.lower() == 'pending' or o.status.lower() == 'in progress' %}
-                                text-yellow-900
+                                bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100
                             {% elif o.status.lower() == 'cancelled' or o.status.lower() == 'rejected' %}
-                                text-red-900
+                                bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100
                             {% else %}
-                                text-blue-900
+                                bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100
                             {% endif %}">
-                            <span aria-hidden class="absolute inset-0 opacity-50 rounded-full
-                                {% if o.status.lower() == 'completed' or o.status.lower() == 'delivered' %}
-                                    bg-green-200
-                                {% elif o.status.lower() == 'pending' or o.status.lower() == 'in progress' %}
-                                    bg-yellow-200
-                                {% elif o.status.lower() == 'cancelled' or o.status.lower() == 'rejected' %}
-                                    bg-red-200
-                                {% else %}
-                                    bg-blue-200
-                                {% endif %}"></span>
-                            <span class="relative">{{ o.status }}</span>
+                            {{ o.status }}
                         </span>
                     </td>
-                    <td class="py-3 px-6 text-left">{{ o.payment_method }}</td>
-                    <td class="py-3 px-6 text-left">{{ o.total }}</td>
-                    <td class="py-3 px-6 text-center">
-                        <div class="flex item-center justify-center space-x-2">
-                            <a href="{{ url_for('show_order_details', order_id=o.id) }}" class="w-4 mr-2 transform hover:text-blue-500 hover:scale-110">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 capitalize">{{ o.payment_method.replace('_', ' ') }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">${{ "%.2f"|format(o.details|sum(attribute='subtotal')) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                        <div class="flex justify-center space-x-2">
+                            <a href="{{ url_for('show_order_details', order_id=o.id) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300" title="View Details">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="{{ url_for('edit_order', id=o.id) }}" class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
+                            <a href="{{ url_for('edit_order', id=o.id) }}" class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="{{ url_for('delete_order', id=o.id) }}" onclick="return confirm('Are you sure you want to delete this order?')" class="w-4 mr-2 transform hover:text-red-500 hover:scale-110">
+                            <a href="{{ url_for('delete_order', id=o.id) }}" onclick="return confirm('Are you sure you want to delete this order?')" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300" title="Delete">
                                 <i class="fas fa-trash-alt"></i>
                             </a>
                         </div>
                     </td>
                 </tr>
                 {% else %}
-                <tr class="border-b border-gray-700">
-                    <td colspan="6" class="py-3 px-6 text-center">There are no orders yet.</td>
+                <tr>
+                    <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                        <div class="flex flex-col items-center py-8">
+                            <i class="fas fa-receipt text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                            <p>No orders found.</p>
+                            <a href="{{ url_for('create_order') }}" class="mt-2 text-purple-600 hover:text-purple-800 dark:text-purple-400 dark:hover:text-purple-300">Create your first order</a>
+                        </div>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    
-    <div class="mt-6 flex justify-between items-center">
-        <a href="{{ url_for('index') }}" class="bg-gray-900 hover:bg-gray-700 text-white font-boldedit_client py-2 px-4 rounded-lg shadow-lg transition duration-200">
-            Go back
-        </a>
-        <a href="{{ url_for('create_order') }}" class="bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-200">
-            Add New Order
-        </a>
-    </div>
+</div>
+
+<div class="mt-6">
+    <a href="{{ url_for('index') }}" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-700 border border-gray-300 dark:border-gray-600">
+        <i class="fas fa-arrow-left mr-2"></i>Go back
+    </a>
 </div>
 {% endblock %}

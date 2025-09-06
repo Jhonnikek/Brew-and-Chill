@@ -3,75 +3,78 @@
 {% block title %}Products{% endblock %}
 
 {% block content %}
-<div class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-6 text-gray-800">Products</h1>
+<div class="mb-4 flex justify-between items-center">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Products</h1>
+        <p class="text-gray-700 dark:text-gray-400 mt-2">Manage your product catalog</p>
+    </div>
+    <a href="{{ url_for('create_product') }}" class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+        <i class="fas fa-plus mr-2"></i>Add Product
+    </a>
+</div>
 
-    <div class="bg-gray-800 shadow-md rounded-lg overflow-hidden">
-        <table class="min-w-full leading-normal">
-            <thead>
-                <tr class="bg-gray-900 text-white uppercase text-sm leading-normal">
-                    <th class="py-3 px-6 text-left">ID</th>
-                    <th class="py-3 px-6 text-left">Name</th>
-                    <th class="py-3 px-6 text-left">Price</th>
-                    <th class="py-3 px-6 text-left">Status</th>
-                    <th class="py-3 px-6 text-left">Description</th>
-                    <th class="py-3 px-6 text-center">Actions</th>
+<div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Price</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
+                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
-            <tbody class="text-gray-300 text-sm font-light">
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {% for p in products %}
-                <tr class="border-b border-gray-700 hover:bg-gray-700">
-                    <td class="py-3 px-6 text-left whitespace-nowrap">{{ p.id }}</td>
-                    <td class="py-3 px-6 text-left">{{ p.product_name }}</td>
-                    <td class="py-3 px-6 text-left">{{ p.price }}</td>
-                    <td class="py-3 px-6 text-left">
-                        <span class="relative inline-block px-3 py-1 font-semibold leading-tight
-                            {% if p.status.lower() == 'active' or p.status.lower() == 'available' %}
-                                text-green-900
-                            {% elif p.status.lower() == 'inactive' or p.status.lower() == 'unavailable' %}
-                                text-red-900
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ p.id }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ p.product_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white font-semibold">${{ "%.2f"|format(p.price) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                            {% if p.status.lower() == 'available' %}
+                                bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100
+                            {% elif p.status.lower() == 'unavailable' %}
+                                bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100
                             {% else %}
-                                text-yellow-900
+                                bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100
                             {% endif %}">
-                            <span aria-hidden class="absolute inset-0 opacity-50 rounded-full
-                                {% if p.status.lower() == 'active' or p.status.lower() == 'available' %}
-                                    bg-green-200
-                                {% elif p.status.lower() == 'inactive' or p.status.lower() == 'unavailable' %}
-                                    bg-red-200
-                                {% else %}
-                                    bg-yellow-200
-                                {% endif %}"></span>
-                            <span class="relative">{{ p.status }}</span>
+                            {{ p.status }}
                         </span>
                     </td>
-                    <td class="py-3 px-6 text-left">{{ p.description }}</td>
-                    <td class="py-3 px-6 text-center">
-                        <div class="flex item-center justify-center space-x-2">
-                            <a href="{{ url_for('edit_product', id=p.id)}}" class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110">
+                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ p.description[:50] }}{% if p.description|length > 50 %}...{% endif %}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                        <div class="flex justify-center space-x-2">
+                            <a href="{{ url_for('edit_product', id=p.id) }}" class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="{{ url_for('delete_product', id=p.id) }}" onclick="return confirm('Are you sure you want to delete this product?')" class="w-4 mr-2 transform hover:text-red-500 hover:scale-110">
+                            <a href="{{ url_for('delete_product', id=p.id) }}" onclick="return confirm('Are you sure you want to delete this product?')" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300" title="Delete">
                                 <i class="fas fa-trash-alt"></i>
                             </a>
                         </div>
                     </td>
                 </tr>
                 {% else %}
-                <tr class="border-b border-gray-700">
-                    <td colspan="6" class="py-3 px-6 text-center">There are no products yet.</td>
+                <tr>
+                    <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                        <div class="flex flex-col items-center py-8">
+                            <i class="fas fa-coffee text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                            <p>No products found.</p>
+                            <a href="{{ url_for('create_product') }}" class="mt-2 text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300">Add your first product</a>
+                        </div>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    
-    <div class="mt-6 flex justify-between items-center">
-        <a href="{{ url_for('index') }}" class="bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-200">
-            Go back
-        </a>
-        <a href="{{ url_for('create_product')}}" class="bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-200">
-            Add New Product
-        </a>
-    </div>
+</div>
+
+<div class="mt-6">
+    <a href="{{ url_for('index') }}" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-700 border border-gray-300 dark:border-gray-600">
+        <i class="fas fa-arrow-left mr-2"></i>Go back
+    </a>
 </div>
 {% endblock %}

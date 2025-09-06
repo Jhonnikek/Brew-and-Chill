@@ -1,64 +1,75 @@
 {% extends 'layout.html' %}
 
-{% block title %} {{'Edit' if order else 'Add'}} Order {% endblock %}
+{% block title %} {{'Edit' if order else 'Create'}} Order {% endblock %}
 
 {% block content %}
+<div class="mb-4">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{'Edit' if order else 'Create'}} Order</h1>
+    <p class="text-gray-700 dark:text-gray-400 mt-2">{{ 'Update order information' if order else 'Create a new order for a customer' }}</p>
+</div>
 
-<div class="container mx-auto p-4 flex flex-col justify-center items-center min-h-screen">
-    <div class="bg-gray-800 shadow-lg rounded-lg p-8 w-full">
-        <h1 class="text-3xl font-bold mb-6 text-white text-center">{{'Edit' if order else 'Add'}} Order</h1>
-        
+<div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+    <div class="p-6">
         <form method="POST" class="space-y-6">
-            <div>
-                <label for="date" class="block text-gray-300 font-medium mb-1">Date:</label>
-                <input type="datetime-local" id="date" name="date" value="{{ order.date.strftime('%Y-%m-%dT%H:%M') if order else '' }}" class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500" required>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Order Date & Time</label>
+                    <input type="datetime-local" id="date" name="date" value="{{ order.date.strftime('%Y-%m-%dT%H:%M') if order else '' }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500" required>
+                </div>
+            
+                <div>
+                    <label for="client" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client</label>
+                    <select name="client_id" id="client" required class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500">
+                        <option value="">Choose a client</option>
+                        {% for client in clients %}
+                        <option value="{{ client.id }}" {% if order and order.client_id == client.id %}selected{% endif %}>
+                            {{ client.client_name }} {{ client.last_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
         
-            <div>
-                <label for="client" class="block text-gray-300 font-medium mb-1">Client:</label>
-                <select name="client_id" id="client" required
-                        class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500">
-                    <option value="">-- Select a client --</option>
-                    {% for client in clients %}
-                    <option value="{{ client.id }}" {% if order and order.client_id == client.id %}selected{% endif %}>
-                        {{ client.client_name }} {{ client.last_name }}
-                    </option>
-                    {% endfor %}
-                </select>
-            </div>
-        
-            <div>
-                <label for="status" class="block text-gray-300 font-medium mb-1">Status:</label>
-                <select name="status" id="status"
-                        class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500">
-                    <option value="">-- Select a status --</option>
-                    <option value="completed" {% if order and order.status == 'completed' %}selected{% endif %}>Completed</option>
-                    <option value="on_hold" {% if order and order.status == 'on_hold' %}selected{% endif %}>On hold</option>
-                    <option value="cancelled" {% if order and order.status == 'cancelled' %}selected{% endif %}>cancelled</option>
-                </select>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="status" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Order Status</label>
+                    <select name="status" id="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500" required>
+                        <option value="">Choose a status</option>
+                        <option value="completed" {% if order and order.status == 'completed' %}selected{% endif %}>Completed</option>
+                        <option value="pending" {% if order and order.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="on_hold" {% if order and order.status == 'on_hold' %}selected{% endif %}>On Hold</option>
+                        <option value="cancelled" {% if order and order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </div>
 
-            <div>
-                <label for="payment_method" class="block text-gray-300 font-medium mb-1">Payment Method:</label>
-                <select name="payment_method" id="payment_method" required
-                        class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500">
-                    <option value="">-- Select a payment method --</option>
-                    <option value="cash" {% if order and order.payment_method == 'cash' %}selected{% endif %}>Cash</option>
-                    <option value="credit_card" {% if order and order.payment_method == 'credit_card' %}selected{% endif %}>Credit Card</option>
-                    <option value="debit_card" {% if order and order.payment_method == 'debit_card' %}selected{% endif %}>Debit Card</option>
-                </select>
+                <div>
+                    <label for="payment_method" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Payment Method</label>
+                    <select name="payment_method" id="payment_method" required class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500">
+                        <option value="">Choose payment method</option>
+                        <option value="cash" {% if order and order.payment_method == 'cash' %}selected{% endif %}>Cash</option>
+                        <option value="credit_card" {% if order and order.payment_method == 'credit_card' %}selected{% endif %}>Credit Card</option>
+                        <option value="debit_card" {% if order and order.payment_method == 'debit_card' %}selected{% endif %}>Debit Card</option>
+                    </select>
+                </div>
             </div>
-
-            <div>
-                <label for="total" class="block text-gray-300 font-medium mb-1">Total:</label>
-                <input type="number" id="total" name="total" value="{{ order.total if order else '' }}" placeholder="Total Order" step="0.01" required class="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500">
+            
+            {% if order %}
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Current Total</label>
+                <div class="text-2xl font-bold text-gray-900 dark:text-white">${{ "%.2f"|format(order.details|sum(attribute='subtotal')) }}</div>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Total is calculated automatically from order details</p>
             </div>
-        
-            <div class="flex justify-center">
-                <input type="submit" value="Send" class="bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg cursor-pointer transition duration-200">
+            {% endif %}
+            
+            <div class="flex items-center justify-between pt-4">
+                <a href="{{ url_for('show_orders') }}" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-700 border border-gray-300 dark:border-gray-600">
+                    Cancel
+                </a>
+                <button type="submit" class="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-purple-600 dark:hover:bg-purple-700 focus:outline-none dark:focus:ring-purple-800">
+                    {{ 'Update Order' if order else 'Create Order' }}
+                </button>
             </div>
         </form>
     </div>
 </div>
-
 {% endblock %}
