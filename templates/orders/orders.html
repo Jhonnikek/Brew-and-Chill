@@ -8,9 +8,6 @@
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Orders</h1>
         <p class="text-gray-700 dark:text-gray-400 mt-2">Manage customer orders and sales</p>
     </div>
-    <a href="{{ url_for('create_order') }}" class="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-purple-600 dark:hover:bg-purple-700 focus:outline-none dark:focus:ring-purple-800">
-        <i class="fas fa-plus mr-2"></i>Create Order
-    </a>
 </div>
 
 <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
@@ -79,9 +76,13 @@
     </div>
 </div>
 
-<div class="mt-6">
+<div class="mt-6 flex justify-between items-center">
     <a href="{{ url_for('index') }}" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-700 border border-gray-300 dark:border-gray-600">
         <i class="fas fa-arrow-left mr-2"></i>Go back
+    </a>
+
+    <a href="{{ url_for('create_order') }}" class="text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-purple-600 dark:hover:bg-purple-700 focus:outline-none dark:focus:ring-purple-800">
+        <i class="fas fa-plus mr-2"></i>Create Order
     </a>
 </div>
 {% endblock %}
