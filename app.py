@@ -161,7 +161,7 @@ def create_order():
         client_id = request.form["client_id"] 
         status = request.form["status"]
         payment_method = request.form["payment_method"]
-        total = request.form["total"]
+        total = 0
         
         new_order = Order(
             date=date_value,
